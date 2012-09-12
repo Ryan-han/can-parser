@@ -1,0 +1,3 @@
+hadoop jar can-parser-0.0.1-SNAPSHOT.jar com.nexr.hmc.mr.HmcMr /target/targetInfo.txt /dbc /test
+
+/Users/ryan/HMC/CANDB /Users/ryan/HMC/tmp file:///Users/ryan/Script/bk 5
