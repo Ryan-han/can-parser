@@ -1,5 +1,6 @@
 package com.nexr.hmc.mr;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -10,6 +11,8 @@ import org.apache.hadoop.mapred.RecordReader;
 
 import com.nexr.hmc.mr.HmcFileInputFormat.ScpInputSplit;
 import com.nexr.hmc.ssh.JschRunner;
+import com.nexr.hmc.ssh.SshExecCommand;
+import com.nexr.hmc.ssh.util.IoUtil;
 
 public class HmcRecordReader implements RecordReader<Text, Text> {
 
@@ -92,7 +95,10 @@ public class HmcRecordReader implements RecordReader<Text, Text> {
     @Override
     public void close() throws IOException {
         // TODO Auto-generated method stub
-
+    	JschRunner runner = new JschRunner(split.getUserId(), split.getHost());
+      runner.setPassword(split.getPwd());
+      SshExecCommand command = new SshExecCommand("mv " + split.getPath() + " " + split.getPath()+".FIN",  null);
+      runner.run(command);
     }
 
     @Override

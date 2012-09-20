@@ -73,7 +73,7 @@ public class BOMessageBuilder implements MessageBuilder {
                             long be = getNanoTimes(beginTime, cols.get(0));
                             body.append(message.getId() + "\t" + null + "\t" + null + "\t" + be + "\t" + signal.getSignalName() + "\t" + signal.getFactor() + "\t" + signal.getOffset() + "\t"
                                     + signal.getMin() + "\t" + signal.getMax() + "\t"
-                                    + getValue(signal.getSignalName(), dec.substring(startPos, startPos + length), signal.getValueType(), signal.getMin(), signal.getMax(), data) + "\t"
+                                    + getValue(dec.substring(startPos, startPos + length), signal.getValueType(), signal.getMin(), signal.getMax()) + "\t"
                                     + signal.getTransmitter());
 
                             log.debug(body.toString());
@@ -95,7 +95,7 @@ public class BOMessageBuilder implements MessageBuilder {
 
     int invalidCount = 0;
 
-    private long getValue(String signalName, String binary, String type, String min, String max, String data) {
+    private long getValue(String binary, String type, String min, String max) {
         if (binary.length() == 1) {
             return Integer.parseInt(binary);
         }
@@ -177,6 +177,22 @@ public class BOMessageBuilder implements MessageBuilder {
             System.out.println(underSecs);
         }
         return result;
+
+    }
+    
+    public static void main(String args[]) {
+    	String data = "4F";
+    	
+    	int dataHex = Integer.parseInt(data, 16);
+      String g = String.format("%08d", Integer.parseInt(Integer.toBinaryString(dataHex)));
+      System.out.println(g);
+      
+      int myint = Integer.parseInt(g, 2);
+      
+      
+      System.out.println(myint);
+      
+     System.out.println(Integer.toString(myint, 8)); 
 
     }
 }
