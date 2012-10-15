@@ -3,6 +3,7 @@ package com.nexr.hmc.builder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,8 +65,8 @@ public class BOMessageBuilder implements MessageBuilder {
                 if (MessageFectory.messageList.containsKey(msgParserId)) {
                     Message message = MessageFectory.messageList.get(msgParserId);
                     log.debug("[" + cols.get(2) + "] Find " + msgParserId + "  Parser" + message.toString());
+                    String dec = hexTodec(cols);
                     for (Signal signal : MessageFectory.messageList.get(msgParserId).getSignal()) {
-                        String dec = hexTodec(cols);
                         int startPos = signal.getStartBit();
                         int length = signal.getLengthBit();
                         StringBuilder body = new StringBuilder();
@@ -120,6 +121,7 @@ public class BOMessageBuilder implements MessageBuilder {
 
     public String hexTodec(List<String> cols) {
         List<String> datas = cols.subList(6, cols.size());
+        Collections.reverse(datas);
         String cHex = "";
         for (String data : datas) {
             int dataHex = Integer.parseInt(data, 16);
