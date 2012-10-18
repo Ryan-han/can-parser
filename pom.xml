@@ -4,7 +4,7 @@
 
 	<groupId>com.nexr.hmc</groupId>
 	<artifactId>can-parser</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>can-parser</name>

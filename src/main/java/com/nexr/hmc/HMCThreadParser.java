@@ -201,19 +201,11 @@ public class HMCThreadParser {
 		long beginTime = 0;
 		try {
 			while ((dataLine = reader.readLine()) != null) {
-				if (dataLine.startsWith(dateFlag)) {
-					Date startDate = new Date(dataLine
-							.substring(dataLine.indexOf(dateFlag) + dateFlag.length(),
-									dataLine.length()).trim());
-					beginTime = startDate.getTime();
-				}
-				if (dataLine.contains("Rx")) {
-					List<String> result = mf.messageBuilderList.get("BO_").dataParse(
-							dataLine);
-					for (String res : result) {
-						output.write((res + "\n").getBytes());
-						output.flush();
-					}
+				List<String> result = mf.messageBuilderList.get("BO_").dataParse(
+						dataLine);
+				for (String res : result) {
+					output.write((res + "\n").getBytes());
+					output.flush();
 				}
 			}
 		} catch (IOException ioe) {

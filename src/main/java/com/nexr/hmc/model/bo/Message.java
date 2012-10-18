@@ -16,17 +16,19 @@ public class Message {
 
 	public Message(MessageBuilder builder, String line) {
 		String[] mes = line.split(" ");
-		this.signal = new ArrayList<Signal>();
-		this.setBuilder(builder);
-		this.setType(mes[0]);
-		this.setId(mes[1]);
-		if (mes[2].endsWith(":")) {
-			this.setMessageName(mes[2].substring(0, mes[2].length()-1));
-		} else { 
-			this.setMessageName(mes[2]);
+		if (mes.length == 5) {
+			this.signal = new ArrayList<Signal>();
+			this.setBuilder(builder);
+			this.setType(mes[0]);
+			this.setId(mes[1]);
+			if (mes[2].endsWith(":")) {
+				this.setMessageName(mes[2].substring(0, mes[2].length()-1));
+			} else { 
+				this.setMessageName(mes[2]);
+			}
+			this.setDlc(Integer.parseInt(mes[3]));
+			this.setTransmitter(mes[4]);
 		}
-		this.setDlc(Integer.parseInt(mes[3]));
-		this.setTransmitter(mes[4]);
 	}
 
 	public String getId() {
@@ -85,11 +87,12 @@ public class Message {
 		this.transmitter = transmitter;
 	}
 
-	@Override
-	public String toString() {
-		return "Message [id=" + id + ", type=" + type + ", messageName="
-				+ messageName + ", dlc=" + dlc + ", transmitter=" + transmitter
-				+ ", builder=" + builder.getName() + ", signal=" + signal
-				+ " signalCnt = " + signal.size() + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "Message [id=" + id + ", type=" + type + ", messageName="
+//				+ messageName + ", dlc=" + dlc + ", transmitter=" + transmitter
+//				+ ", signal=" + signal
+//				+ ", builder=" + builder.getName() 
+//				+ " signalCnt = " + signal.size() + "]";
+//	}
 }

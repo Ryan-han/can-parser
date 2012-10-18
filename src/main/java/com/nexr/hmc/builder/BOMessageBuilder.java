@@ -1,10 +1,16 @@
 package com.nexr.hmc.builder;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -41,14 +47,14 @@ public class BOMessageBuilder implements MessageBuilder {
         List<String> result = new ArrayList<String>();
         String dataLine = data.toString();
         if (dataLine.startsWith(dateFlag)) {
-            System.out.println(dataLine.substring(dataLine.indexOf(dateFlag) + dateFlag.length(), dataLine.length()).trim());
             try {
                 beginTime = format.parse(dataLine.substring(dataLine.indexOf(dateFlag) + dateFlag.length(), dataLine.length()).trim()).getTime();
+                log.info(data + " " + dataLine.substring(dataLine.indexOf(dateFlag) + dateFlag.length(), dataLine.length()).trim() + " " + beginTime);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        if (dataLine.contains("Rx")) {
+        if (dataLine.contains("Rx") && !dataLine.contains("RxErr")) {
             String[] lineCols = data.trim().split(" ");
             List<String> cols = new ArrayList<String>();
             for (String col : lineCols) {
@@ -63,29 +69,31 @@ public class BOMessageBuilder implements MessageBuilder {
                 String msgParserId = String.valueOf(Integer.parseInt(cols.get(2), 16));
                 if (MessageFectory.messageList.containsKey(msgParserId)) {
                     Message message = MessageFectory.messageList.get(msgParserId);
-                    log.debug("[" + cols.get(2) + "] Find " + msgParserId + "  Parser" + message.toString());
+                    log.debug("[" + cols.get(2) + "] Find " + msgParserId + "  Parser " + message.toString());
+                    String dec = hexTodec(cols);
+                    long be = getNanoTimes(beginTime, cols.get(0));
                     for (Signal signal : MessageFectory.messageList.get(msgParserId).getSignal()) {
-                        String dec = hexTodec(cols);
-                        int startPos = signal.getStartBit();
-                        int length = signal.getLengthBit();
+                    	int startPos = dec.length() - signal.getStartBit();
+                        int length = startPos - signal.getLengthBit();
                         StringBuilder body = new StringBuilder();
-                        if (dec.length() >= startPos + length) {
-                            long be = getNanoTimes(beginTime, cols.get(0));
+                        
+                        if (startPos >= 0) {
+                            
                             body.append(message.getId() + "\t" + null + "\t" + null + "\t" + be + "\t" + signal.getSignalName() + "\t" + signal.getFactor() + "\t" + signal.getOffset() + "\t"
                                     + signal.getMin() + "\t" + signal.getMax() + "\t"
-                                    + getValue(dec.substring(startPos, startPos + length), signal.getValueType(), signal.getMin(), signal.getMax()) + "\t"
+                                    + getValue(dec.substring(length, startPos), signal.getValueType(), signal.getMin(), signal.getMax()) + "\t"
                                     + signal.getTransmitter());
 
                             log.debug(body.toString());
 
                             result.add(body.toString());
                         } else {
-                            // log.error("Invalid Data " + data);
+//                             log.error("Invalid Data " + data);
                             break;
                         }
                     }
                 } else {
-                    // log.error("Not Find [" + cols.get(2) + "] " + msgParserId);
+//                     log.error("Not Find [" + cols.get(2) + "] " + msgParserId);
                 }
             }
         }
@@ -120,6 +128,7 @@ public class BOMessageBuilder implements MessageBuilder {
 
     public String hexTodec(List<String> cols) {
         List<String> datas = cols.subList(6, cols.size());
+        Collections.reverse(datas);
         String cHex = "";
         for (String data : datas) {
             int dataHex = Integer.parseInt(data, 16);
@@ -193,6 +202,7 @@ public class BOMessageBuilder implements MessageBuilder {
       System.out.println(myint);
       
      System.out.println(Integer.toString(myint, 8)); 
-
-    }
+     
+    }     
 }
+
